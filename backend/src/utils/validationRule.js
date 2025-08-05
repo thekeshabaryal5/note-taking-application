@@ -2,7 +2,7 @@ import Joi from "joi";
 
 // defining rules to validate user details using joi
 const userValidationRule = Joi.object({
-    // username must be string unique and cannn't be null with minimum 3 chars and max 255
+    // username must be string unique and cann't be null with minimum 3 chars and max 255chars
   username: Joi.string()
     .min(3)
     .max(255)

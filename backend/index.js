@@ -18,6 +18,8 @@ app.listen(port , () => {
   connectToDatabase()
 });
 
+app.use(express.static("./public"));
+
 app.use("/note", noteRouter);
 app.use("/api/auth",authRouter);
 

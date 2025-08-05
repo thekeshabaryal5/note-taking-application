@@ -1,10 +1,11 @@
 import expressAsyncHandler from "express-async-handler";
 import { pool } from "../connectToDatabase/DbConnection.js";
 import bcrypt from "bcrypt";
+import { deleteUploadedFile } from "../utils/deleteUploadedFile.js";
 
 
 export const registerController = expressAsyncHandler(async(req,res,next)=>{
-    const {username,password,email,contact,profileImage} = req.body;
+    const {username,password,email,contact,profile_image} = req.body;
     if(!username || !email || !password)
     {
         let error = new Error("Username, email and password are required");
@@ -18,10 +19,18 @@ export const registerController = expressAsyncHandler(async(req,res,next)=>{
 
         if(existingUserByUsername.length > 0)
         {
+            // deleting the uploaded files
+            if (req.file) {
+                deleteUploadedFile(req.file.filename);
+  }
             throw new Error("Username already exist");
         }
         else if(existingUserByEmail.length > 0)
         {
+            // deleting uploaded file 
+            if (req.file) {
+                deleteUploadedFile(req.file.filename);
+  }
             throw new Error("Email already exist");
         }
         else
@@ -31,13 +40,12 @@ export const registerController = expressAsyncHandler(async(req,res,next)=>{
 
             //store to db
             const sql = "insert into users (username,email,contact,password,profile_image) values (?,?,?,?,?)";
-            const [result] = await pool.query(sql,[username,email,contact||null,hashedPassword,profileImage]);
+            const [result] = await pool.query(sql,[username,email,contact||null,hashedPassword,profile_image]);
             res.status(201).json({
             success:true,
             message:"User registered successfully",
             result:result
         })
         }
-   
     }
 });
