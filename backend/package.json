@@ -1,0 +1,18 @@
+{
+  "name": "note-taking-application-backend",
+  "version": "1.0.0",
+  "description": "Backend API for a full-stack Note-Taking application built with Node.js and Express.",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "nodemon index.js",
+    "dev": "nodemon index.js"
+  },
+  "author": "Keshab Aryal",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^5.1.0",
+    "dotenv": "^17.2.1",
+    "express-async-handler": "^1.2.0"
+  }
+}
