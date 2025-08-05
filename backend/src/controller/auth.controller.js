@@ -4,8 +4,7 @@ import bcrypt from "bcrypt";
 
 
 export const registerController = expressAsyncHandler(async(req,res,next)=>{
-    const {username,password,email,contact} = req.body;
-    const profileImage = null
+    const {username,password,email,contact,profileImage} = req.body;
     if(!username || !email || !password)
     {
         let error = new Error("Username, email and password are required");
@@ -13,12 +12,17 @@ export const registerController = expressAsyncHandler(async(req,res,next)=>{
     }
     else
     {
-        //checking if the user already exist by the username or email
-        const [existingUser] = await pool.query("select * from users where username=? or email=?",[username,email]);
+        //checking if the user already exist by the username and email
+        const [existingUserByUsername] = await pool.query("select * from users where username=?",[username]);
+        const [existingUserByEmail] = await pool.query("select * from users where email=?",[email]);
 
-        if(existingUser.length > 0)
+        if(existingUserByUsername.length > 0)
         {
-            throw new Error("Username or email already exist");
+            throw new Error("Username already exist");
+        }
+        else if(existingUserByEmail.length > 0)
+        {
+            throw new Error("Email already exist");
         }
         else
         {
