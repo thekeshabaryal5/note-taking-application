@@ -9,7 +9,11 @@ import noteRouter from "./src/route/note.route.js";
 
 const app = express(); //creating an express app
 
+// body parsers 
 app.use(json()); 
+app.use(express.urlencoded({ extended: true }));
+
+//cookie parsers
 app.use(cookieParser())
 
 app.listen(port , () => {
@@ -21,8 +25,8 @@ app.listen(port , () => {
 
 app.use(express.static("./public"));
 
-app.use("/note", noteRouter);
 app.use("/api/auth",authRouter);
+app.use("/api/note", noteRouter);
 
 
 // handaling error via errorMiddleware

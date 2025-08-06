@@ -4,7 +4,7 @@ import bcrypt from "bcrypt";
 import { deleteUploadedFile } from "../utils/deleteUploadedFile.js";
 
 
-export const registerController = expressAsyncHandler(async(req,res,next)=>{
+const registerController = expressAsyncHandler(async(req,res,next)=>{
     const {username,password,email,contact,profile_image} = req.body;
     if(!username || !email || !password)
     {
@@ -49,3 +49,5 @@ export const registerController = expressAsyncHandler(async(req,res,next)=>{
         }
     }
 });
+
+export default registerController;

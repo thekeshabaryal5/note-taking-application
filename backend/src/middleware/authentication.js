@@ -1,6 +1,8 @@
 import expressAsyncHandler from "express-async-handler";
 import { verifyToken } from "../utils/token.js";
 import { jwtSecretKey } from "../constant.js";
+
+//check if the user is authenticated or not
 const authenticate = expressAsyncHandler(async (req,res,next)=>{
     const token = req.cookies.token;
     if(!token)
@@ -17,7 +19,7 @@ const authenticate = expressAsyncHandler(async (req,res,next)=>{
     }
     catch(error)
     {
-        error.message("Invalid token");
+        error.message = "Invalid token";
         error.status = 401;
         throw error;
     }

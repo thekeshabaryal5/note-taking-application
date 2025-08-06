@@ -15,6 +15,7 @@ profile_image VARCHAR(255)
  CREATE TABLE IF NOT EXISTS notes(
 note_id INT AUTO_INCREMENT PRIMARY KEY,
 user_id INT,
+title TEXT NOT NULL,
 note TEXT NOT NULL,
 created_date DATE,
 FOREIGN KEY (user_id) REFERENCES users(id)

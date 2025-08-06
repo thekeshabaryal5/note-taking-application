@@ -6,13 +6,19 @@ import {
   readNoteController,
   updateNoteController,
 } from "../controller/note.controller.js";
+import authenticate from "../middleware/authentication.js";
+import noteValidation from "../middleware/note.validation.js";
+import { noteUpdateValidationRule, noteValidationRule } from "../utils/validationRule.js";
 let noteRouter = Router();
-noteRouter.route("/").post(createNoteController).get(readAllNoteController);
+noteRouter
+  .route("/")
+  .post(authenticate,noteValidation(noteValidationRule),createNoteController)
+  .get(authenticate,readAllNoteController);
 
 noteRouter
   .route("/:id")
-  .get(readNoteController)
-  .patch(updateNoteController)
-  .delete(deleteNoteController);
+  .patch(authenticate,noteValidation(noteUpdateValidationRule),updateNoteController)
+  .delete(authenticate,deleteNoteController)
+  .get(authenticate,readNoteController);
 
 export default noteRouter;

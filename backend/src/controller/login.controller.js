@@ -3,7 +3,7 @@ import expressAsyncHandler from "express-async-handler";
 import { pool } from "../connectToDatabase/DbConnection.js";
 import { cookieExpiryDuration, jwtExpiryDuration, jwtSecretKey } from "../constant.js";
 import { generateToken } from "../utils/token.js";
-export const loginController =  expressAsyncHandler(async (req,res,next)=>{
+const loginController =  expressAsyncHandler(async (req,res,next)=>{
     const {username, password} = req.body;
     const [users] = await pool.query("select * from users where username=? or email=?",[username,username]);
 
@@ -46,3 +46,5 @@ export const loginController =  expressAsyncHandler(async (req,res,next)=>{
         })
     }
 })
+
+export default loginController

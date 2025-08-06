@@ -1,7 +1,7 @@
 import Joi from "joi";
 
 // defining rules to validate user details using joi
-const userValidationRule = Joi.object({
+export const userValidationRule = Joi.object({
     // username must be string unique and cann't be null with minimum 3 chars and max 255chars
   username: Joi.string()
     .min(3)
@@ -53,5 +53,46 @@ const userValidationRule = Joi.object({
     })
 }).unknown(false);
 
+export const noteValidationRule = Joi.object({
+  // define rule for title
+    title: Joi.string()
+    .min(3)
+    .max(100)
+    .required()
+    .messages({
+      "string.base": "Title must be a text value.",
+      "string.max": "Tittle must not exceed 100 characters.",
+      "string.min":"Title must be at least 3 characters long",
+      "any.required": "Title is required."
+    }),
 
-export default userValidationRule;
+    // define rule for note
+    note: Joi.string().min(3).required().messages({
+      "string.min":"Note must be at least 3 characters long",
+      "any.required": "Note is required."
+    })
+}).unknown(false);
+
+export const noteUpdateValidationRule = Joi.object({
+  // title is optional but must follow rules if provided
+  title: Joi.string()
+    .min(3)
+    .max(100)
+    .optional()
+    .messages({
+      "string.base": "Title must be a text value.",
+      "string.max": "Title must not exceed 100 characters.",
+      "string.min": "Title must be at least 3 characters long"
+    }),
+
+  // note is optional but must follow rules if provided
+  note: Joi.string()
+    .min(3)
+    .optional()
+    .messages({
+      "string.min": "Note must be at least 3 characters long"
+    })
+})
+  // require at least one field
+  .or("title", "note")
+  .unknown(false);
