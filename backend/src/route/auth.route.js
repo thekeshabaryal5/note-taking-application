@@ -6,6 +6,8 @@ import userValidation from "../middleware/user.validation.js";
 import userValidationRule from "../utils/validationRule.js";
 import uploadProfilePicture from "../middleware/profile.middleware.js";
 import { loginController } from "../controller/login.controller.js";
+import authenticate from "../middleware/authentication.js";
+import getCurrentUserController from "../controller/currentUser.controller.js";
 
 
 const authRouter = Router();
@@ -14,4 +16,7 @@ authRouter.route("/register").post(uploadProfilePicture,userValidation(userValid
 
 // login router
 authRouter.route("/login").post(loginController);
+
+authRouter.get("/me",authenticate,getCurrentUserController);
+
 export default authRouter;

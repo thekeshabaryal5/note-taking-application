@@ -1,7 +1,7 @@
 const errorMiddleware = (err, req, res, next) => {
   res.status(err.status || 400).json({
     success: false,
-    message: err.message,
+    message: err.message || "Something went wrong"
   });
 };
 

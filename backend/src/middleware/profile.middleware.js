@@ -1,4 +1,4 @@
-import { webUrl } from "../constant.js";
+import { serverUrl} from "../constant.js";
 import upload from "./uploadFile.js";
 
 const uploadProfilePicture = (req,res,next)=>{
@@ -10,7 +10,7 @@ const uploadProfilePicture = (req,res,next)=>{
             }
             if(req.file)
             {
-                req.body.profile_image = `${webUrl}/${req.file.filename}`;
+                req.body.profile_image = `${serverUrl}/${req.file.filename}`;
             }
             else
             {
