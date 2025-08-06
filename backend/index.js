@@ -1,5 +1,6 @@
 import express, { json } from "express";
 import cookieParser from "cookie-parser";
+import cors from "cors";
 
 import { connectToDatabase } from "./src/connectToDatabase/DbConnection.js";
 import { port } from "./src/constant.js";
@@ -9,6 +10,8 @@ import noteRouter from "./src/route/note.route.js";
 
 const app = express(); //creating an express app
 
+//enabling cors
+app.use(cors())
 // body parsers 
 app.use(json()); 
 app.use(express.urlencoded({ extended: true }));

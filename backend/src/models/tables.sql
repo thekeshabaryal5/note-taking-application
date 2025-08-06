@@ -12,6 +12,7 @@ username VARCHAR(255) UNIQUE NOT NULL,
 email VARCHAR(255) UNIQUE NOT NULL,
 contact VARCHAR(20),
 PASSWORD VARCHAR(255) NOT NULL,
+isVerifiedEmail boolean default FALSE,
 profile_image VARCHAR(255)
 );
 
