@@ -4,10 +4,11 @@ import { Router } from "express";
 import { registerController } from "../controller/register.controller.js";
 import userValidation from "../middleware/user.validation.js";
 import userValidationRule from "../utils/validationRule.js";
-import uploadProfilePicture from "../middleware/profile.middleware.js";
+import uploadProfilePicture from "../middleware/profileImage.middleware.js";
 import { loginController } from "../controller/login.controller.js";
 import authenticate from "../middleware/authentication.js";
 import getCurrentUserController from "../controller/currentUser.controller.js";
+import updateProfileImageController from "../controller/updateProfile.controller.js";
 
 
 const authRouter = Router();
@@ -18,5 +19,7 @@ authRouter.route("/register").post(uploadProfilePicture,userValidation(userValid
 authRouter.route("/login").post(loginController);
 
 authRouter.get("/me",authenticate,getCurrentUserController);
+
+authRouter.patch("/upload-profile-image",authenticate,uploadProfilePicture,updateProfileImageController);
 
 export default authRouter;
