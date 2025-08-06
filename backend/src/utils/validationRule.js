@@ -71,7 +71,7 @@ export const noteValidationRule = Joi.object({
       "string.min":"Note must be at least 3 characters long",
       "any.required": "Note is required."
     })
-}).unknown(false);
+}).unknown(true);
 
 export const noteUpdateValidationRule = Joi.object({
   // title is optional but must follow rules if provided
