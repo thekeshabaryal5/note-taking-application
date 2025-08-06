@@ -9,6 +9,14 @@ export const createNoteController = expressAsyncHandler(
     const userId = req.user.id;
     const date = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Kathmandu" });
 
+    // check if the note with same title exists before or not
+    const [notes] = await pool.query( "SELECT * FROM notes WHERE user_id = ? AND LOWER(title) = LOWER(?)",[userId,title]);
+    if(notes.length === 0)
+    {
+      let error = new Error("Notes with same title already exists");
+      throw error;
+    }
+    // Add note
     const[result] = await pool.query("Insert into notes (user_id,title,note,created_date) values (?,?,?,?)",[userId,title,note,date])
     res.status(201).json({
       success: true,
