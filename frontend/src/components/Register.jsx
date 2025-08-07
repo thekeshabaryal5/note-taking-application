@@ -1,7 +1,14 @@
 import React from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 
 const Register = () => {
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [contact, setContact] = useState("");
+  const [password, setPassword] = useState("");
+  const [profileImage, setProfileImage] = useState(null);
+  const [error, setError] = useState("");
   return (
     <div className="form-container">
       <div className="form-card">

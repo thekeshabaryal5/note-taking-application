@@ -13,8 +13,8 @@ const Navbar = () => {
           <Link to="/profile">Profile</Link>
           <button>Logout</button>
 
-          {/* <Link to="/login">Login</Link>
-          <Link to="/register">Register</Link> */}
+          <Link to="/login">Login</Link>
+          <Link to="/register">Register</Link>
         </div>
       </div>
     </nav>

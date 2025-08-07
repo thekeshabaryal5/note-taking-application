@@ -219,12 +219,11 @@ nav {
   width: 25%;
   height: 10%;
 }
-.note-category {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
+
 .note-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 .note-title {
   font-size: 1.5rem;
@@ -256,6 +255,7 @@ nav {
 .note-text {
   color: rgb(10, 10, 10);
   margin-bottom: 1rem;
+  line-height: 25px;
 }
 
 .note-actions {
@@ -263,7 +263,75 @@ nav {
   gap: 0.5rem;
   margin-top: 1rem;
 }
+.note-footer p {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #6b21a8; /* a nice deep purple */
+  font-size: 1rem;
+}
+
+.note-category {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 0.5rem 0;
+}
+
+.note-category label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #f3e8ff;
+  padding: 6px 10px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.note-category label:hover {
+  background-color: #e9d5ff;
+  transform: scale(1.02);
+}
+
+.note-category input[type="checkbox"] {
+  accent-color: #9333ea; /* modern checkbox color */
+  width: 16px;
+  height: 16px;
+}
 
 .note-categories p {
-  color: #9e0ae2;
+  color: #c466f0;
+}
+
+.delete-button,
+.create-note-button,
+.edit-button {
+  padding: 0.5rem 1rem;
+  background-color: #dc2626;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+.edit-button {
+  background-color: #f59e0b;
+}
+
+.edit-button:hover {
+  background-color: #d97706;
+}
+
+.delete-button:hover {
+  background-color: #b91c1c;
+}
+
+.create-note-button {
+  width: 150px;
+  background-color: #c459ee;
+}
+
+.create-note-button:hover {
+  background-color: #801cb9;
 }

@@ -58,7 +58,7 @@ const Dashboard = () => {
               Important
             </label>
           </div>
-          <button>Create Note</button>
+          <button className="create-note-button">Create Note</button>
         </div>
       </div>
       <div>
