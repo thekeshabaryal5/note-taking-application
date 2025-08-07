@@ -5,7 +5,7 @@ const Profile = () => {
     <div className="profile-container">
       <div className="profile-card">
         <h4 className="profile-title">Profile</h4>
-        <div>
+        <div className="profile-info">
           <p>
             <strong>Username: </strong> Keshab Aryal
           </p>
@@ -15,9 +15,13 @@ const Profile = () => {
           <p>
             <strong>Contact: </strong>10253466582
           </p>
-          <img src="https://placehold.co/600x400" alt="profile-image" />
-          <input type="file" accept="image/*" />
-          <button>Update Profile Image</button>
+          <img
+            src="https://placehold.co/600x400"
+            alt="profile-image"
+            className="profile-image "
+          />
+          <input type="file" accept="image/*" className="form-input" required />
+          <button class="form-button">Update Profile Image</button>
         </div>
       </div>
     </div>

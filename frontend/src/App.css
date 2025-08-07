@@ -75,7 +75,8 @@ nav {
   max-width: 400px;
 }
 
-.form-title {
+.form-title,
+.profile-title {
   font-size: 1.5rem;
   font-weight: 600;
   color: #a73ce6;
@@ -127,4 +128,42 @@ nav {
 }
 .form-group a:hover {
   text-decoration: underline;
+}
+
+.profile-container {
+  min-height: 100vh;
+  padding: 2rem;
+}
+
+.profile-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 3px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.profile-title {
+  font-size: 1.8rem;
+  color: #ba57e7;
+  margin-bottom: 1.5rem;
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.profile-info p {
+  font-size: 1rem;
+  color: #1f2937;
+}
+
+.profile-image {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 1rem auto;
+  display: block;
 }
