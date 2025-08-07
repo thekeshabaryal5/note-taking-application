@@ -19,4 +19,4 @@ const verifyEmail = expressAsyncHandler(async (req, res, next) => {
     message: "User verified successfully",
   });
 });
-export default verifyEmail;
+export default verifyEmail;  
