@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState } from "react";
-import { loginApi, profileApi } from "../const";
+import { loginApi, logoutApi, profileApi } from "../const";
 import axios from "axios";
 
 export const AuthContext = createContext(null);
@@ -36,12 +36,23 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const logout = async () => {
+    try {
+      await axios.post(logoutApi, {}, { withCredentials: true });
+      setUser(null);
+      return false;
+    } catch (error) {
+      setUser(null);
+      console.log("Logout Error: ", error);
+    }
+  };
+
   useEffect(() => {
     fetchUser();
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, login, loading }}>
+    <AuthContext.Provider value={{ user, login, loading, logout }}>
       {children}
     </AuthContext.Provider>
   );
