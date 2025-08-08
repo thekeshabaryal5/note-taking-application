@@ -65,9 +65,8 @@ export const readAllNoteController = expressAsyncHandler(
         [note.note_id]
       );
       note.categories = categories.map((value, i) => value.category_id);
-
     }
-    console.log(notes);
+
     res.status(200).json({
       success: true,
       message: "All notes read successfully",
