@@ -4,3 +4,5 @@ export const verifyEmailApi = `${serverUrl}/api/user/verify-email`;
 export const loginApi = `${serverUrl}/api/user/login`;
 export const profileApi = `${serverUrl}/api/user/me`;
 export const logoutApi = `${serverUrl}/api/user/logout`;
+export const updateProfileImageApi = `${serverUrl}/api/user/upload-profile-image`;
+export const getNotesApi = `${serverUrl}/api/note`;

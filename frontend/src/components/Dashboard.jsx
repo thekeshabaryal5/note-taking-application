@@ -1,6 +1,22 @@
-import React from "react";
+import React, { useState } from "react";
+import { getNotesApi } from "../const";
 
 const Dashboard = () => {
+  const [notes, setNotes] = useState([]);
+  const [error, setError] = useState("");
+  const fetchNotes = async () => {
+    try {
+      const response = await axios.get(`${getNotesApi}`, {
+        withCredentials: true,
+      });
+      setNotes(response.result);
+    } catch (error) {
+      setError("Failed to fetch notes " + err);
+    }
+  };
+  useEffect(() => {
+    fetchNotes();
+  }, []);
   return (
     <div className="dashboard-container">
       <div className="dashboard-header">

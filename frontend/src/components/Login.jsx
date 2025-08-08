@@ -14,14 +14,16 @@ const Login = () => {
     e.preventDefault();
     setError("");
     try {
+      console.log("Trying to login....");
       const success = await login({ username, password });
+      console.log("login....");
       if (success) {
         navigate("/dashboard");
       } else {
         setError("Login Failed: Invalid response from server");
       }
     } catch (err) {
-      setError(err.response?.data?.message || "Login error Failed");
+      setError(err.response?.data?.message || "Login Failed");
     }
   };
 

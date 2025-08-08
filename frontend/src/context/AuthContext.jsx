@@ -21,9 +21,11 @@ export const AuthProvider = ({ children }) => {
   };
   const login = async (userData) => {
     try {
+      console.log("Inside login function");
       const response = await axios.post(`${loginApi}`, userData, {
         withCredentials: true,
       });
+      console.log(response);
 
       if (response.data.message === "Login success") {
         await fetchUser();
