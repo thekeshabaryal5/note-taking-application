@@ -5,4 +5,5 @@ export const loginApi = `${serverUrl}/api/user/login`;
 export const profileApi = `${serverUrl}/api/user/me`;
 export const logoutApi = `${serverUrl}/api/user/logout`;
 export const updateProfileImageApi = `${serverUrl}/api/user/upload-profile-image`;
-export const getNotesApi = `${serverUrl}/api/note`;
+export const noteApi = `${serverUrl}/api/note`;
+export const getCategoryApi = `${serverUrl}/api/note/note-category`;

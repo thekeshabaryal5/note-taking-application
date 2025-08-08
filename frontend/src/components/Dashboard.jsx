@@ -1,22 +1,61 @@
-import React, { useState } from "react";
-import { getNotesApi } from "../const";
+import React, { useEffect, useState } from "react";
+import { getCategoryApi, noteApi } from "../const";
+import axios from "axios";
 
 const Dashboard = () => {
   const [notes, setNotes] = useState([]);
   const [error, setError] = useState("");
+  const [noteCategories, setNoteCategories] = useState([]);
+  const [editingNoteId, setEditingNoteId] = useState(null);
+  const [newNote, setNewNote] = useState({
+    title: "",
+    note: "",
+    categories: [],
+  });
+  const fetchCategory = async () => {
+    try {
+      const response = await axios.get(getCategoryApi);
+      setNoteCategories(response.data.data);
+    } catch (error) {
+      setError("Failed to fetch notes " + error);
+    }
+  };
   const fetchNotes = async () => {
     try {
-      const response = await axios.get(`${getNotesApi}`, {
+      const response = await axios.get(`${noteApi}`, {
         withCredentials: true,
       });
-      setNotes(response.result);
+      setNotes(response.data.result);
     } catch (error) {
-      setError("Failed to fetch notes " + err);
+      setError("Failed to fetch notes " + error);
+    }
+  };
+  const handleCreateOrUpdateNote = async () => {
+    try {
+      if (editingNoteId) {
+        //update
+        await axios.patch(`${noteApi}/${editingNoteId}`, newNote, {
+          withCredentials: true,
+        });
+        setEditingNoteId(null);
+      } else {
+        //Insert
+        console.log("Sending new note", newNote);
+        const insert = await axios.post(noteApi, newNote, {
+          withCredentials: true,
+        });
+      }
+      setNewNote({ title: "", note: "", categories: [] });
+      fetchNotes();
+    } catch (error) {
+      setError(`Failed to save note: ${error.message}`);
     }
   };
   useEffect(() => {
+    fetchCategory();
     fetchNotes();
   }, []);
+
   return (
     <div className="dashboard-container">
       <div className="dashboard-header">
@@ -36,77 +75,103 @@ const Dashboard = () => {
           name="title"
           className="create-note-title"
           placeholder="note title"
+          value={newNote.title}
+          onChange={(e) =>
+            setNewNote((prev) => ({ ...prev, title: e.target.value }))
+          }
         />
         <textarea
           className="note-textarea"
           name="note"
           placeholder="your notes goes here"
+          rows="4"
+          value={newNote.note}
+          onChange={(e) =>
+            setNewNote((prev) => ({ ...prev, note: e.target.value }))
+          }
         ></textarea>
         <div className="note-footer">
           <p>Select Category</p>
           <div className="note-category">
-            <label>
-              <input type="checkbox" name="category" value="1" />
-              Work
-            </label>
-            <label>
-              <input type="checkbox" name="category" value="2" />
-              Person
-            </label>
-
-            <label>
-              <input type="checkbox" name="category" value="3" />
-              Study
-            </label>
-
-            <label>
-              <input type="checkbox" name="category" value="4" />
-              Shopping
-            </label>
-
-            <label>
-              <input type="checkbox" name="category" value="5" />
-              Ideas
-            </label>
-
-            <label>
-              <input type="checkbox" name="category" value="6" />
-              Important
-            </label>
+            {noteCategories.map((value, i) => {
+              return (
+                <label key={i}>
+                  <input
+                    type="checkbox"
+                    value={value.id}
+                    checked={newNote.categories.includes(Number(value.id))}
+                    onChange={(e) => {
+                      const id = Number(e.target.value);
+                      setNewNote((prev) => {
+                        const categories = prev.categories || [];
+                        if (e.target.checked) {
+                          return {
+                            ...prev,
+                            categories: [...categories, id],
+                          };
+                        } else {
+                          return {
+                            ...prev,
+                            categories: noteCategories.filter((c) => c !== id),
+                          };
+                        }
+                      });
+                    }}
+                  />
+                  {value.type}
+                </label>
+              );
+            })}
           </div>
-          <button className="create-note-button">Create Note</button>
+          <button
+            className="create-note-button"
+            onClick={handleCreateOrUpdateNote}
+          >
+            {editingNoteId ? "Update Note" : "Create Note"}
+          </button>
         </div>
       </div>
       <div>
         <div className="note-grid">
-          <div className="note-card">
-            <div className="note-title-box">
-              <p className="note-title">Note Title</p>
-              <div className="note-categories">
-                <p>Study</p>
-                <p>Shopping</p>
-                <p>Ideas</p>
-              </div>
-            </div>
-            <p className="note-text">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Eligendi
-              quas necessitatibus veniam suscipit illum labore nostrum illo
-              aperiam, ea aliquid. Ad quo, fugiat cum eveniet placeat pariatur,
-              dignissimos expedita iusto, nisi quam nam. Fugiat, unde
-              consectetur? Animi, deleniti nesciunt atque, aperiam veniam
-              maxime, veritatis corrupti minima accusantium hic error unde.
-            </p>
-            <p className="note-date">
-              Created at: <span>01-05-2025</span>
-            </p>
-            <p className="note-date">
-              Last update: <span>01-05-2025</span>
-            </p>
-            <div className="note-actions">
-              <button className="edit-button">Edit</button>
-              <button className="delete-button">Delete</button>
-            </div>
-          </div>
+          {notes.length > 0 &&
+            notes.map((value, i) => {
+              return (
+                <div className="note-card" key={i}>
+                  <div className="note-title-box">
+                    <p className="note-title">{value.title}</p>
+                    <div className="note-categories">
+                      {value.categories.map((v) => {
+                        const type = noteCategories.filter((w) => w.id === v);
+                        return <p key={v}>{type[0]?.type}</p>;
+                      })}
+                    </div>
+                  </div>
+                  <p className="note-text">{value.note}</p>
+                  <p className="note-date">
+                    Created at: {value.created_date.split("T")[0]}
+                  </p>
+                  <p className="note-date">
+                    Last update: {value.update_date.split("T")[0]}
+                  </p>
+                  <div className="note-actions">
+                    <button
+                      className="edit-button"
+                      onClick={() => {
+                        setNewNote({
+                          title: value.title,
+                          note: value.note,
+                          categories: value.categories,
+                        });
+                        setEditingNoteId(value.note_id);
+                      }}
+                    >
+                      Edit
+                    </button>
+                    <button className="delete-button">Delete</button>
+                  </div>
+                </div>
+              );
+            })}
         </div>
       </div>
     </div>
