@@ -48,7 +48,8 @@ const loginController = expressAsyncHandler(async (req, res, next) => {
     const token = await generateToken(info, secretKey, expiryInfo);
     res.cookie("token", token, {
       httpOnly: true,
-      sameSite: "None",
+      secure: false,
+      sameSite: "lax",
       expires: new Date(
         Date.now() + cookieExpiryDuration * 24 * 60 * 60 * 1000
       ),
