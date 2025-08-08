@@ -21,7 +21,7 @@ const Profile = () => {
             className="profile-image "
           />
           <input type="file" accept="image/*" className="form-input" required />
-          <button class="form-button">Update Profile Image</button>
+          <button className="form-button">Update Profile Image</button>
         </div>
       </div>
     </div>

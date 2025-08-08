@@ -1,13 +1,40 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useContext, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
 
 const Login = () => {
+  const navigate = useNavigate();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
+  const { user, login, loading } = useContext(AuthContext);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    try {
+      const success = await login({ username, password });
+      if (success) {
+        navigate("/dashboard");
+      } else {
+        setError("Login Failed: Invalid response from server");
+      }
+    } catch (err) {
+      setError(err.response?.data?.message || "Login error Failed");
+    }
+  };
+
+  if (loading) {
+    return <div>Loading....</div>;
+  }
+
   return (
     <div className="form-container">
       <div className="form-card">
         <h4 className="form-title">Log in</h4>
-        <p className="error"></p>
-        <form className="form-group">
+        {error && <p className="error">{error}</p>}
+        <form className="form-group" onSubmit={handleSubmit}>
           {/* username field */}
           <div>
             <label htmlFor="username">Username / Email</label>
@@ -17,11 +44,13 @@ const Login = () => {
               className="form-input"
               name="username"
               id="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               required
             />
           </div>
 
-          {/* password field  */}
+          {/* password field */}
           <div>
             <label htmlFor="password">Password</label>
             <input
@@ -31,6 +60,8 @@ const Login = () => {
               id="password"
               className="form-input"
               required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
 

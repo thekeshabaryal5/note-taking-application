@@ -6,6 +6,7 @@ import Register from "./components/Register";
 import Profile from "./components/Profile";
 import Dashboard from "./components/Dashboard";
 import "./App.css";
+import UserVerify from "./components/UserVerify";
 const App = () => {
   return (
     <BrowserRouter>
@@ -13,6 +14,7 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Login />}></Route>
         <Route path="/login" element={<Login />}></Route>
+        <Route path="/verify-email" element={<UserVerify></UserVerify>}></Route>
         <Route path="/profile" element={<Profile />}></Route>
         <Route path="/register" element={<Register />}></Route>
         <Route path="/dashboard" element={<Dashboard />}></Route>
