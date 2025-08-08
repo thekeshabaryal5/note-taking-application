@@ -32,5 +32,5 @@ authRouter
   .patch(authenticate, uploadProfilePicture, updateProfileImageController);
 
 //logout router
-authRouter.route("/logout", logoutController);
+authRouter.route("/logout").post(logoutController);
 export default authRouter;
