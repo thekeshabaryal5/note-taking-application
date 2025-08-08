@@ -8,17 +8,27 @@ import {
 } from "../controller/note.controller.js";
 import authenticate from "../middleware/authentication.js";
 import noteValidation from "../middleware/note.validation.js";
-import { noteUpdateValidationRule, noteValidationRule } from "../utils/validationRule.js";
+import {
+  noteUpdateValidationRule,
+  noteValidationRule,
+} from "../utils/validationRule.js";
+import readAllNoteCategory from "../controller/note.category.controller.js";
 let noteRouter = Router();
 noteRouter
   .route("/")
-  .post(authenticate,noteValidation(noteValidationRule),createNoteController)
-  .get(authenticate,readAllNoteController);
+  .post(authenticate, noteValidation(noteValidationRule), createNoteController)
+  .get(authenticate, readAllNoteController);
+
+noteRouter.route("/note-category").get(readAllNoteCategory);
 
 noteRouter
   .route("/:id")
-  .patch(authenticate,noteValidation(noteUpdateValidationRule),updateNoteController)
-  .delete(authenticate,deleteNoteController)
-  .get(authenticate,readNoteController);
+  .patch(
+    authenticate,
+    noteValidation(noteUpdateValidationRule),
+    updateNoteController
+  )
+  .delete(authenticate, deleteNoteController)
+  .get(authenticate, readNoteController);
 
 export default noteRouter;
