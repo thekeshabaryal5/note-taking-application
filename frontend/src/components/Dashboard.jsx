@@ -1,63 +1,149 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { getCategoryApi, noteApi } from "../const";
 import axios from "axios";
 
+// Custom hook to debounce a value
+// This delays updating debounced until user stops typing for delay ms
+function useDebounce(value, delay = 250) {
+  const [debounced, setDebounced] = useState(value);
+  useEffect(() => {
+    const t = setTimeout(() => setDebounced(value), delay);
+    return () => clearTimeout(t); // Cleanup on new value change
+  }, [value, delay]);
+  return debounced;
+}
+
 const Dashboard = () => {
-  const [notes, setNotes] = useState([]);
-  const [error, setError] = useState("");
-  const [noteCategories, setNoteCategories] = useState([]);
-  const [editingNoteId, setEditingNoteId] = useState(null);
+  // state variable
+  const [notes, setNotes] = useState([]); // All notes fetched from API
+  const [error, setError] = useState(""); // Error message
+  const [noteCategories, setNoteCategories] = useState([]); // All categories fetched from API
+  const [editingNoteId, setEditingNoteId] = useState(null); // Track which note is being edited
   const [newNote, setNewNote] = useState({
     title: "",
     note: "",
     categories: [],
   });
+
+  const [searchTerm, setSearchTerm] = useState(""); // Search box input
+  const debouncedSearch = useDebounce(searchTerm, 250); // Debounced search term
+
+  //API calls
   const fetchCategory = async () => {
     try {
       const response = await axios.get(getCategoryApi);
-      setNoteCategories(response.data.data);
-    } catch (error) {
-      setError("Failed to fetch notes " + error);
+      setNoteCategories(response.data.data); // Store all categories
+      setError("");
+    } catch (err) {
+      setError("Failed to fetch categories: " + err);
     }
   };
+
   const fetchNotes = async () => {
     try {
       const response = await axios.get(`${noteApi}`, {
-        withCredentials: true,
+        withCredentials: true, // Include cookies/session
       });
-      setNotes(response.data.result);
-    } catch (error) {
-      setError("Failed to fetch notes " + error);
+      setNotes(response.data.result); // Store all notes
+      setError("");
+    } catch (err) {
+      setError("Failed to fetch notes: " + err);
     }
   };
+
+  // Create or update a note
   const handleCreateOrUpdateNote = async () => {
     try {
       if (editingNoteId) {
-        //update
-        await axios.patch(`${noteApi}/${editingNoteId}`, newNote, {
-          withCredentials: true,
-        });
-        setEditingNoteId(null);
+        // Update note
+        await axios.patch(
+          `${noteApi}/${editingNoteId}`,
+          {
+            note: newNote.note,
+            title: newNote.title,
+            categories: newNote.categories,
+          },
+          { withCredentials: true }
+        );
+        setEditingNoteId(null); // Reset edit mode
       } else {
-        //Insert
-        console.log("Sending new note", newNote);
-        const insert = await axios.post(noteApi, newNote, {
-          withCredentials: true,
-        });
+        // Create new note
+        await axios.post(noteApi, newNote, { withCredentials: true });
       }
+
+      // Reset input fields after submit
       setNewNote({ title: "", note: "", categories: [] });
-      fetchNotes();
-    } catch (error) {
-      setError(`Failed to save note: ${error.message}`);
+      fetchNotes(); // Refresh notes
+      setError("");
+    } catch (err) {
+      console.log(err?.response?.data?.message ?? err);
+      setError(err?.response?.data?.message ?? "Something went wrong");
     }
   };
+
+  // load form fields when editing
+  const handleEditNote = (note) => {
+    setNewNote({
+      title: note.title,
+      note: note.note,
+      categories: note.categories || [],
+    });
+    setEditingNoteId(note.note_id);
+  };
+
+  // Delete note after confirmation
+  const handleDeleteNote = async (note) => {
+    try {
+      if (confirm("Are you sure want to delete? ")) {
+        await axios.delete(`${noteApi}/${note.note_id}`, {
+          withCredentials: true,
+        });
+        fetchNotes(); // Refresh notes
+        setError("");
+      }
+    } catch (err) {
+      setError("Failed to delete note: " + err);
+    }
+  };
+
+  // Fetch categories and notes when components mounts
   useEffect(() => {
     fetchCategory();
     fetchNotes();
   }, []);
 
+  // Filtered notes (search by title, content, or category)
+  const filteredNotes = useMemo(() => {
+    const q = (debouncedSearch || "").trim().toLowerCase();
+    if (!q) return notes; // if no search then show all notes
+
+    const words = q.split(/\s+/); // Split search term into words
+
+    return notes.filter((n) => {
+      // Build search string from title + content + category names
+      const categoryNames = (n.categories || [])
+        .map((catId) => {
+          const found = noteCategories.find((c) => c.id === catId);
+          return found ? found.type : "";
+        })
+        .join(" ");
+
+      const hay = (
+        (n.title || "") +
+        " " +
+        (n.note || "") +
+        " " +
+        categoryNames
+      ).toLowerCase();
+
+      // Only include notes where all search words are found
+      return words.every((w) => hay.includes(w));
+    });
+  }, [notes, debouncedSearch, noteCategories]);
+
   return (
     <div className="dashboard-container">
+      {/* Search bar*/}
       <div className="dashboard-header">
         <h2 className="dashboard-title">My Notes</h2>
         <input
@@ -65,11 +151,17 @@ const Dashboard = () => {
           name="search"
           placeholder="search notes"
           className="notes-search"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
         />
       </div>
 
-      <p className="error"></p>
+      {/* Show error if any */}
+      {error && <p className="error">{error}</p>}
+
+      {/* * Note creation/update form */}
       <div className="note-input-container">
+        {/* Note title */}
         <input
           type="text"
           name="title"
@@ -80,6 +172,7 @@ const Dashboard = () => {
             setNewNote((prev) => ({ ...prev, title: e.target.value }))
           }
         />
+        {/* Note content */}
         <textarea
           className="note-textarea"
           name="note"
@@ -89,13 +182,13 @@ const Dashboard = () => {
           onChange={(e) =>
             setNewNote((prev) => ({ ...prev, note: e.target.value }))
           }
-        ></textarea>
+        />
         <div className="note-footer">
           <p>Select Category</p>
           <div className="note-category">
-            {noteCategories.map((value, i) => {
+            {noteCategories.map((value) => {
               return (
-                <label key={i}>
+                <label key={value.id}>
                   <input
                     type="checkbox"
                     value={value.id}
@@ -105,14 +198,13 @@ const Dashboard = () => {
                       setNewNote((prev) => {
                         const categories = prev.categories || [];
                         if (e.target.checked) {
-                          return {
-                            ...prev,
-                            categories: [...categories, id],
-                          };
+                          // Add category if checked
+                          return { ...prev, categories: [...categories, id] };
                         } else {
+                          // Remove category if unchecked
                           return {
                             ...prev,
-                            categories: noteCategories.filter((c) => c !== id),
+                            categories: categories.filter((c) => c !== id),
                           };
                         }
                       });
@@ -123,6 +215,7 @@ const Dashboard = () => {
               );
             })}
           </div>
+          {/* Submit button */}
           <button
             className="create-note-button"
             onClick={handleCreateOrUpdateNote}
@@ -131,43 +224,50 @@ const Dashboard = () => {
           </button>
         </div>
       </div>
+
+      {/* Notes list*/}
       <div>
         <div className="note-grid">
-          {notes.length > 0 &&
-            notes.map((value, i) => {
+          {filteredNotes.length > 0 &&
+            filteredNotes.map((value) => {
               return (
-                <div className="note-card" key={i}>
+                <div className="note-card" key={value.note_id}>
+                  {/* Note title and categories */}
                   <div className="note-title-box">
                     <p className="note-title">{value.title}</p>
                     <div className="note-categories">
                       {value.categories.map((v) => {
-                        const type = noteCategories.filter((w) => w.id === v);
-                        return <p key={v}>{type[0]?.type}</p>;
+                        const found = noteCategories.find((w) => w.id === v);
+                        return <p key={v}>{found?.type ?? "Unknown"}</p>;
                       })}
                     </div>
                   </div>
+
+                  {/* Note content */}
                   <p className="note-text">{value.note}</p>
+
+                  {/* Note dates */}
                   <p className="note-date">
-                    Created at: {value.created_date.split("T")[0]}
+                    Created at: {value.created_date?.split("T")[0]}
                   </p>
                   <p className="note-date">
-                    Last update: {value.update_date.split("T")[0]}
+                    Last update: {value.update_date?.split("T")[0]}
                   </p>
+
+                  {/* Actions */}
                   <div className="note-actions">
                     <button
                       className="edit-button"
-                      onClick={() => {
-                        setNewNote({
-                          title: value.title,
-                          note: value.note,
-                          categories: value.categories,
-                        });
-                        setEditingNoteId(value.note_id);
-                      }}
+                      onClick={() => handleEditNote(value)}
                     >
                       Edit
                     </button>
-                    <button className="delete-button">Delete</button>
+                    <button
+                      className="delete-button"
+                      onClick={() => handleDeleteNote(value)}
+                    >
+                      Delete
+                    </button>
                   </div>
                 </div>
               );

@@ -335,3 +335,8 @@ nav {
 .create-note-button:hover {
   background-color: #801cb9;
 }
+
+.nav-links span {
+  color: white;
+  font-style: italic;
+}

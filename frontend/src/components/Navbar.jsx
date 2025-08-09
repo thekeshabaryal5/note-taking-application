@@ -15,6 +15,8 @@ const Navbar = () => {
               <Link to="/dashboard">Dashboard</Link>
               <Link to="/profile">Profile</Link>
               <button onClick={() => logout()}>Logout</button>
+              <span>Welcome {user.result.username} !!!</span>
+              {/* {console.log(user)} */}
             </>
           ) : (
             <>
