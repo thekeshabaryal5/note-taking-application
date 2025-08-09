@@ -130,7 +130,7 @@ export const updateNoteController = expressAsyncHandler(
     }
 
     // Add update_date userId and noteId to the query values
-    values.push(update_date, userId, noteId);
+    values.push(update_date, userId, Number(noteId));
 
     const sql = `update notes set ${updates.join(
       ", "
