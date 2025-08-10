@@ -43,7 +43,7 @@ const Dashboard = () => {
 
   const fetchNotes = async () => {
     try {
-      const response = await axios.get(`${noteApi}`, {
+      const response = await axios.get(`${noteApi}?page=${page}&limit=5`, {
         withCredentials: true, // Include cookies/session
       });
       setNotes(response.data.result); // Store all notes
@@ -51,7 +51,7 @@ const Dashboard = () => {
       setTotalPages(response.data.pagination.totalPages); // track total pages fetched
       setError("");
     } catch (err) {
-      setError("Failed to fetch notes: here chai yo ho hai ta  " + err);
+      setError("Failed to fetch notes  " + err);
     }
   };
 
