@@ -59,22 +59,42 @@ export const createNoteController = expressAsyncHandler(
 export const readAllNoteController = expressAsyncHandler(
   async (req, res, next) => {
     const userId = req.user.id;
-    const [notes] = await pool.query("select * from notes where  user_id = ?", [
-      userId,
-    ]);
 
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 1;
+    const offset = (page - 1) * limit;
+
+    //get total count for the current use
+    const [[{ total }]] = await pool.query(
+      "SELECT COUNT(*) as total FROM notes WHERE user_id=?",
+      [userId]
+    );
+
+    //get paginated notes
+    const [notes] = await pool.query(
+      "SELECT * FROM notes WHERE user_id = ? ORDER BY created_date DESC LIMIT ? OFFSET ?",
+      [userId, limit, offset]
+    );
+
+    //attach categories for each note
     for (const note of notes) {
       const [categories] = await pool.query(
-        "select category_id from note_category where note_id=?",
+        "SELECT category_id FROM note_category WHERE note_id = ?",
         [note.note_id]
       );
-      note.categories = categories.map((value, i) => value.category_id);
+      note.categories = categories.map((c) => c.category_id);
     }
 
     res.status(200).json({
       success: true,
       message: "All notes read successfully",
       result: notes,
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
     });
   }
 );
