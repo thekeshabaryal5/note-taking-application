@@ -61,7 +61,6 @@ const Dashboard = () => {
           {
             note: newNote.note,
             title: newNote.title,
-            categories: newNote.categories,
           },
           { withCredentials: true }
         );
