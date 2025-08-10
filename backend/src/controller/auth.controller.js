@@ -6,8 +6,11 @@ import {
   jwtExpiryDuration,
   jwtSecretKey,
 } from "../constant.js";
-import { generateToken } from "../utils/token.js";
-const loginController = expressAsyncHandler(async (req, res, next) => {
+
+import { generateToken, verifyToken } from "../utils/token.js";
+
+//login controller
+export const loginController = expressAsyncHandler(async (req, res, next) => {
   const { username, password } = req.body;
   const [users] = await pool.query(
     "select * from users where username=? or email=?",
@@ -62,4 +65,33 @@ const loginController = expressAsyncHandler(async (req, res, next) => {
   }
 });
 
-export default loginController;
+// logout controller
+export const logoutController = expressAsyncHandler(async (req, res, next) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: false,
+    sameSite: "lax",
+  });
+  res.status(200).json({
+    success: true,
+    message: "Logout successful",
+  });
+});
+
+// verify email controller
+export const verifyEmail = expressAsyncHandler(async (req, res, next) => {
+  let tokenString = req.headers.authorization;
+  let token = tokenString.split(" ")[1];
+  let infoObj = await verifyToken(token, jwtSecretKey);
+  let userId = infoObj.id;
+
+  //making the user with respective id as verified
+  let [result] = await pool.query(
+    "UPDATE users SET isVerifiedEmail = TRUE WHERE id = ?",
+    [userId]
+  );
+  res.status(200).json({
+    success: true,
+    message: "User verified successfully",
+  });
+});

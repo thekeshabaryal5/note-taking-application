@@ -3,13 +3,10 @@ import { Router } from "express";
 import userValidation from "../middleware/user.validation.js";
 import { userValidationRule } from "../utils/validationRule.js";
 import uploadProfilePicture from "../middleware/profileImage.middleware.js";
-import loginController from "../controller/login.controller.js";
+
 import authenticate from "../middleware/authentication.js";
-import getCurrentUserController from "../controller/currentUser.controller.js";
-import updateProfileImageController from "../controller/updateProfile.controller.js";
-import registerController from "../controller/register.controller.js";
-import verifyEmail from "../controller/verifyEmail.controller.js";
-import logoutController from "../controller/logout.controller.js";
+import { getCurrentUserController, registerController, updateProfileImageController } from "../controller/user.controller.js";
+import { loginController, logoutController, verifyEmail } from "../controller/auth.controller.js";
 
 const authRouter = Router();
 //checking if the user details are valid or not before registration

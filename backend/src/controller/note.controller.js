@@ -170,3 +170,14 @@ export const deleteNoteController = expressAsyncHandler(
     });
   }
 );
+
+// reading all note category
+export const readAllNoteCategory = expressAsyncHandler(
+  async (req, res, next) => {
+    const [category] = await pool.query("select * from category");
+    res.status(200).json({
+      success: true,
+      data: category,
+    });
+  }
+);

@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   createNoteController,
   deleteNoteController,
+  readAllNoteCategory,
   readAllNoteController,
   readNoteController,
   updateNoteController,
@@ -12,7 +13,7 @@ import {
   noteUpdateValidationRule,
   noteValidationRule,
 } from "../utils/validationRule.js";
-import readAllNoteCategory from "../controller/note.category.controller.js";
+
 let noteRouter = Router();
 noteRouter
   .route("/")
