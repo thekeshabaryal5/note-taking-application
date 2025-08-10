@@ -11,11 +11,15 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [profileImage, setProfileImage] = useState(null);
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true); // Start loading
+    setError(""); // Clear previous error
+
     const formData = new FormData();
     formData.append("username", username);
     formData.append("email", email);
@@ -32,6 +36,8 @@ const Register = () => {
       navigate("/login");
     } catch (error) {
       setError(error.response?.data?.message || "Registration failed");
+    } finally {
+      setIsSubmitting(false); // stop loading regardless of form submission succeed or failed
     }
   };
   return (
@@ -107,7 +113,7 @@ const Register = () => {
           </div>
           {/* profile image field  */}
           <div>
-            <label htmlFor="profile_image">Profile Image</label>
+            <label htmlFor="profile_image">Profile Image (optional)</label>
             <input
               type="file"
               name="profile_image"
@@ -118,7 +124,12 @@ const Register = () => {
             />
           </div>
 
-          <button type="submit" className="form-button" onClick={handleSubmit}>
+          <button
+            type="submit"
+            className="form-button"
+            onClick={handleSubmit}
+            disabled={isSubmitting}
+          >
             Register
           </button>
           <p>

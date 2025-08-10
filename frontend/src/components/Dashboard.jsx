@@ -19,6 +19,8 @@ const Dashboard = () => {
   const [error, setError] = useState(""); // Error message
   const [noteCategories, setNoteCategories] = useState([]); // All categories fetched from API
   const [editingNoteId, setEditingNoteId] = useState(null); // Track which note is being edited
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [newNote, setNewNote] = useState({
     title: "",
     note: "",
@@ -45,9 +47,11 @@ const Dashboard = () => {
         withCredentials: true, // Include cookies/session
       });
       setNotes(response.data.result); // Store all notes
+      console.log(response);
+      setTotalPages(response.data.pagination.totalPages); // track total pages fetched
       setError("");
     } catch (err) {
-      setError("Failed to fetch notes: " + err);
+      setError("Failed to fetch notes: here chai yo ho hai ta  " + err);
     }
   };
 
@@ -109,7 +113,7 @@ const Dashboard = () => {
   useEffect(() => {
     fetchCategory();
     fetchNotes();
-  }, []);
+  }, [page]);
 
   // Filtered notes (search by title, content, or category)
   const filteredNotes = useMemo(() => {
@@ -141,139 +145,155 @@ const Dashboard = () => {
   }, [notes, debouncedSearch, noteCategories]);
 
   return (
-    <div className="dashboard-container">
-      {/* Search bar*/}
-      <div className="dashboard-header">
-        <h2 className="dashboard-title">My Notes</h2>
-        <input
-          type="text"
-          name="search"
-          placeholder="search notes"
-          className="notes-search"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-      </div>
-
-      {/* Show error if any */}
-      {error && <p className="error">{error}</p>}
-
-      {/* * Note creation/update form */}
-      <div className="note-input-container">
-        {/* Note title */}
-        <input
-          type="text"
-          name="title"
-          className="create-note-title"
-          placeholder="note title"
-          value={newNote.title}
-          onChange={(e) =>
-            setNewNote((prev) => ({ ...prev, title: e.target.value }))
-          }
-        />
-        {/* Note content */}
-        <textarea
-          className="note-textarea"
-          name="note"
-          placeholder="your notes goes here"
-          rows="4"
-          value={newNote.note}
-          onChange={(e) =>
-            setNewNote((prev) => ({ ...prev, note: e.target.value }))
-          }
-        />
-        <div className="note-footer">
-          <p>Select Category</p>
-          <div className="note-category">
-            {noteCategories.map((value) => {
-              return (
-                <label key={value.id}>
-                  <input
-                    type="checkbox"
-                    value={value.id}
-                    checked={newNote.categories.includes(Number(value.id))}
-                    onChange={(e) => {
-                      const id = Number(e.target.value);
-                      setNewNote((prev) => {
-                        const categories = prev.categories || [];
-                        if (e.target.checked) {
-                          // Add category if checked
-                          return { ...prev, categories: [...categories, id] };
-                        } else {
-                          // Remove category if unchecked
-                          return {
-                            ...prev,
-                            categories: categories.filter((c) => c !== id),
-                          };
-                        }
-                      });
-                    }}
-                  />
-                  {value.type}
-                </label>
-              );
-            })}
-          </div>
-          {/* Submit button */}
-          <button
-            className="create-note-button"
-            onClick={handleCreateOrUpdateNote}
-          >
-            {editingNoteId ? "Update Note" : "Create Note"}
-          </button>
+    <>
+      <div className="dashboard-container">
+        {/* Search bar*/}
+        <div className="dashboard-header">
+          <h2 className="dashboard-title">My Notes</h2>
+          <input
+            type="text"
+            name="search"
+            placeholder="search notes"
+            className="notes-search"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
         </div>
-      </div>
 
-      {/* Notes list*/}
-      <div>
-        <div className="note-grid">
-          {filteredNotes.length > 0 &&
-            filteredNotes.map((value) => {
-              return (
-                <div className="note-card" key={value.note_id}>
-                  {/* Note title and categories */}
-                  <div className="note-title-box">
-                    <p className="note-title">{value.title}</p>
-                    <div className="note-categories">
-                      {value.categories.map((v) => {
-                        const found = noteCategories.find((w) => w.id === v);
-                        return <p key={v}>{found?.type ?? "Unknown"}</p>;
-                      })}
+        {/* Show error if any */}
+        {error && <p className="error">{error}</p>}
+
+        {/* * Note creation/update form */}
+        <div className="note-input-container">
+          {/* Note title */}
+          <input
+            type="text"
+            name="title"
+            className="create-note-title"
+            placeholder="note title"
+            value={newNote.title}
+            onChange={(e) =>
+              setNewNote((prev) => ({ ...prev, title: e.target.value }))
+            }
+          />
+          {/* Note content */}
+          <textarea
+            className="note-textarea"
+            name="note"
+            placeholder="your notes goes here"
+            rows="4"
+            value={newNote.note}
+            onChange={(e) =>
+              setNewNote((prev) => ({ ...prev, note: e.target.value }))
+            }
+          />
+          <div className="note-footer">
+            <p>Select Category</p>
+            <div className="note-category">
+              {noteCategories.map((value) => {
+                return (
+                  <label key={value.id}>
+                    <input
+                      type="checkbox"
+                      value={value.id}
+                      checked={newNote.categories.includes(Number(value.id))}
+                      onChange={(e) => {
+                        const id = Number(e.target.value);
+                        setNewNote((prev) => {
+                          const categories = prev.categories || [];
+                          if (e.target.checked) {
+                            // Add category if checked
+                            return { ...prev, categories: [...categories, id] };
+                          } else {
+                            // Remove category if unchecked
+                            return {
+                              ...prev,
+                              categories: categories.filter((c) => c !== id),
+                            };
+                          }
+                        });
+                      }}
+                    />
+                    {value.type}
+                  </label>
+                );
+              })}
+            </div>
+            {/* Submit button */}
+            <button
+              className="create-note-button"
+              onClick={handleCreateOrUpdateNote}
+            >
+              {editingNoteId ? "Update Note" : "Create Note"}
+            </button>
+          </div>
+        </div>
+
+        {/* Notes list*/}
+        <div>
+          <div className="note-grid">
+            {filteredNotes.length > 0 &&
+              filteredNotes.map((value) => {
+                return (
+                  <div className="note-card" key={value.note_id}>
+                    {/* Note title and categories */}
+                    <div className="note-title-box">
+                      <p className="note-title">{value.title}</p>
+                      <div className="note-categories">
+                        {value.categories.map((v) => {
+                          const found = noteCategories.find((w) => w.id === v);
+                          return <p key={v}>{found?.type ?? "Unknown"}</p>;
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Note content */}
+                    <p className="note-text">{value.note}</p>
+
+                    {/* Note dates */}
+                    <p className="note-date">
+                      Created at: {value.created_date?.split("T")[0]}
+                    </p>
+                    <p className="note-date">
+                      Last update: {value.update_date?.split("T")[0]}
+                    </p>
+
+                    {/* Actions */}
+                    <div className="note-actions">
+                      <button
+                        className="edit-button"
+                        onClick={() => handleEditNote(value)}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        className="delete-button"
+                        onClick={() => handleDeleteNote(value)}
+                      >
+                        Delete
+                      </button>
                     </div>
                   </div>
-
-                  {/* Note content */}
-                  <p className="note-text">{value.note}</p>
-
-                  {/* Note dates */}
-                  <p className="note-date">
-                    Created at: {value.created_date?.split("T")[0]}
-                  </p>
-                  <p className="note-date">
-                    Last update: {value.update_date?.split("T")[0]}
-                  </p>
-
-                  {/* Actions */}
-                  <div className="note-actions">
-                    <button
-                      className="edit-button"
-                      onClick={() => handleEditNote(value)}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      className="delete-button"
-                      onClick={() => handleDeleteNote(value)}
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
+                );
+              })}
+          </div>
         </div>
       </div>
-    </div>
+      <div className="pagination">
+        <button disabled={page === 1} onClick={() => setPage((p) => p - 1)}>
+          Prev
+        </button>
+        <span>
+          Page {page} of {totalPages}
+        </span>
+        <button
+          disabled={page === totalPages}
+          onClick={() => setPage((p) => p + 1)}
+        >
+          Next
+        </button>
+      </div>
+    </>
   );
 };
 

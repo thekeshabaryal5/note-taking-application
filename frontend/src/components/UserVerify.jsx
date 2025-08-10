@@ -17,7 +17,9 @@ const UserVerify = () => {
         },
       });
       navigate("/login");
-    } catch (e) {}
+    } catch (e) {
+      console.log("Error verifying email ", e);
+    }
   };
   useEffect(() => {
     verifyEmail();
