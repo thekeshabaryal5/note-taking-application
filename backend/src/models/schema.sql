@@ -21,10 +21,12 @@ CREATE TABLE IF NOT EXISTS notes(
     user_id INT,
     title VARCHAR(255) NOT NULL,
     note TEXT NOT NULL,
-    created_date DATE,
-    update_date DATE,
+    created_date TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    update_date TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-);
+)ENGINE=InnoDB 
+DEFAULT CHARSET=utf8mb4 
+COLLATE=utf8mb4_0900_ai_ci;
 
 #create category table
 CREATE TABLE IF NOT EXISTS category(

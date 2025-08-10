@@ -6,12 +6,16 @@ export const createNoteController = expressAsyncHandler(
   async (req, res, next) => {
     const { note, title, categories } = req.body;
     const userId = req.user.id;
-    const date = new Date().toLocaleDateString("en-CA", {
+    const date = new Intl.DateTimeFormat("en-CA", {
       timeZone: "Asia/Kathmandu",
-    });
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(new Date());
 
     const connection = await pool.getConnection();
     try {
+      await connection.beginTransaction(); // starting the transaction
       // check if the note with same title exists before or not
       const [notes] = await connection.query(
         "SELECT * FROM notes WHERE user_id = ? AND LOWER(title) = LOWER(?)",
@@ -132,6 +136,19 @@ export const updateNoteController = expressAsyncHandler(
     // Add update_date userId and noteId to the query values
     values.push(update_date, userId, Number(noteId));
 
+    // check if other notes have same title or not
+    const [notes] = await pool.query(
+      `SELECT title FROM notes WHERE user_id = ? AND note_id != ? AND LOWER(title) = LOWER(?)`,
+      [userId, noteId, title]
+    );
+    //if same title note exists don't update
+    if (notes.length > 0) {
+      let error = new Error("Note with same title already exists");
+      error.status = 400;
+      throw error;
+    }
+
+    //update note
     const sql = `update notes set ${updates.join(
       ", "
     )},update_date=? where user_id=? and note_id=?`;

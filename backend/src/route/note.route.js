@@ -17,7 +17,7 @@ import {
 let noteRouter = Router();
 noteRouter
   .route("/")
-  .post(authenticate, noteValidation(noteValidationRule), createNoteController)
+  .post(authenticate, noteValidation(noteValidationRule), createNoteController) // authenticate user , validate notes and then update notes
   .get(authenticate, readAllNoteController);
 
 noteRouter.route("/note-category").get(readAllNoteCategory);
