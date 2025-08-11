@@ -143,7 +143,16 @@ The program will automatically create database named **note_app** and required t
 
 ---
 
-## 📡 API Endpoints
+## 📄 Full API Documentation
+
+For complete, interactive API documentation with request/response examples, visit:
+
+- **Swagger UI (Local)** → `http://localhost:8000/api-docs`
+- **Swagger UI (Production)** → `https://your-domain.com/api-docs`
+
+---
+
+## 📡 API Endpoints (Quick Reference)
 
 ### Authentication
 
