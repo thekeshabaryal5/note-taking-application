@@ -1,7 +1,7 @@
 import cors from "cors";
-import { frontendUrl } from "../constant.js";
+import { frontendUrl, serverUrl } from "../constant.js";
 
-const allowedOrigins = [frontendUrl];
+const allowedOrigins = [frontendUrl, serverUrl];
 
 export const customCors = () =>
   cors({

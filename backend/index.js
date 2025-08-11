@@ -8,6 +8,8 @@ import authRouter from "./src/route/auth.route.js";
 import noteRouter from "./src/route/note.route.js";
 import { customCors } from "./src/utils/corsOptions.js";
 import limiter from "./src/utils/rateLimiter.js";
+import { swaggerUi, swaggerSpec } from "./swagger.js";
+
 const app = express(); //creating an express app
 
 // body parsers
@@ -23,6 +25,8 @@ app.use(limiter);
 //cookie parsers
 app.use(cookieParser());
 
+//server swagger UI at /api-docs
+app.use("/api-docs",swaggerUi.serve,swaggerUi.setup(swaggerSpec));
 app.listen(port, () => {
   console.log(`Express app running at port ${port}`);
 
